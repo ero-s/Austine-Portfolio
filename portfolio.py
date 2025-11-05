@@ -1,8 +1,6 @@
 import streamlit as st
 from pathlib import Path
 
-# --- PAGE CONFIGURATION ---
-# Set page config must be the first Streamlit command
 st.set_page_config(
     page_title="Austine Lomocso | Digital Portfolio",
     page_icon="🤖",
@@ -10,22 +8,18 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# --- PATHS ---
-# Use Pathlib for robust path handling
 current_dir = Path(__file__).parent if "__file__" in locals() else Path.cwd()
 css_file = current_dir / "styles" / "main.css"
 resume_file = current_dir / "assets" / "CV.pdf"
 profile_pic_path = current_dir / "assets" / "profile-pic.jpg"
 
-# --- MODIFIABLE CONFIGURATION ---
-# All personal data is here. Edit this to update your portfolio.
 
 CONFIG = {
     "PROFILE": {
-        "name": "Austine Lomocso",  # Your name
+        "name": "Austine Lomocso",
         "title": "Full-Stack Developer & Godot Enthusiast",
-        "profile_pic": profile_pic_path,  # Path to your profile picture
-        "resume_file": resume_file,  # Path to your resume
+        "profile_pic": profile_pic_path,
+        "resume_file": resume_file,
     },
     "LINKS": {
         "LinkedIn": "https://www.linkedin.com/in/austine-lomocso-bb1448255/",
@@ -43,7 +37,7 @@ I thrive in collaborative environments and am known for being a cooperative and 
         """,
         "metrics": [
             {"label": "Years of Experience", "value": "3"},
-            {"label": "Projects Completed", "value": "5"},
+            {"label": "Projects Completed", "value": "3"},
             {"label": "Programming Languages", "value": "5"},
         ]
     },
@@ -79,13 +73,7 @@ I thrive in collaborative environments and am known for being a cooperative and 
             "image_url": "https://placehold.co/600x400/000000/FFFFFF/png?text=Planomatik",
             "repo_link": "https://github.com/BrentTolentino/Planomatilk"
         },
-        {
-            "title": "StoreStock",
-            "description": "A responsive and real-time store inventory management app. Utilizes JWT for authentication and Socket.io for live updates.",
-            "technologies": ["MongoDB", "Express.js", "React", "Node.js", "JWT"],
-            "image_url": "https://placehold.co/600x400/5E5C6A/FFFFFF/png?text=StoreStock",
-            "repo_link": "https://github.com/ero-s/Store-Stock"
-        },
+
         {
             "title": "BlueHire",
             "description": "A realtime localized job hunting app for blue-collar workers looking for job opportunities, Spring Security for auth, and Stripe integration for payments.",
@@ -124,7 +112,6 @@ I thrive in collaborative environments and am known for being a cooperative and 
 
 
 def load_css(file_path):
-    """Loads a CSS file and injects it into the Streamlit app."""
     try:
         with open(file_path) as f:
             st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
@@ -133,7 +120,6 @@ def load_css(file_path):
 
 
 def load_pdf(file_path):
-    """Loads a PDF file and returns it as bytes."""
     try:
         with open(file_path, "rb") as pdf_file:
             return pdf_file.read()
@@ -142,25 +128,24 @@ def load_pdf(file_path):
         return None
 
 
-# --- LOAD ASSETS ---
 load_css(css_file)
 profile_pic = CONFIG["PROFILE"]["profile_pic"]
 resume_bytes = load_pdf(CONFIG["PROFILE"]["resume_file"])
 
-# --- SIDEBAR ---
 with st.sidebar:
+    st.set_page_config(
+        initial_sidebar_state="expanded"
+    )
     st.image(str(profile_pic), width=200)
     st.title(CONFIG["PROFILE"]["name"])
     st.subheader(CONFIG["PROFILE"]["title"])
 
-    # --- Sidebar Links ---
     st.write("---")
     st.markdown("### 🔗 Connect with Me")
     cols = st.columns(len(CONFIG["LINKS"]))
     for i, (platform, link) in enumerate(CONFIG["LINKS"].items()):
         cols[i].link_button(platform, link, use_container_width=True)
 
-    # --- Resume Download ---
     st.write("---")
     if resume_bytes:
         st.download_button(
@@ -171,7 +156,6 @@ with st.sidebar:
             use_container_width=True,
         )
 
-    # --- Contact Form (Sidebar) ---
     st.write("---")
     st.markdown("### Contact Me")
     with st.form(key="contact_form", clear_on_submit=True):
@@ -186,38 +170,30 @@ with st.sidebar:
             if not name or not email or not message:
                 st.warning("Please fill out all fields.")
             else:
-                # In a real app, you'd email this or save it to a DB
                 st.success("Message sent successfully! I'll get back to you soon.")
 
-# --- MAIN CONTENT ---
-
-# Create tabs for different sections
 tab_about, tab_projects, tab_skills_exp = st.tabs(
     ["🏠 About Me", "🚀 My Projects", "🛠️ Skills & Experience"]
 )
 
-# --- ABOUT ME TAB ---
 with tab_about:
     st.header("About Me")
     st.write(CONFIG["ABOUT"]["summary"], unsafe_allow_html=True)
     st.write("---")
 
-    # --- Metrics ---
     st.subheader("At a Glance")
     cols = st.columns(len(CONFIG["ABOUT"]["metrics"]))
     for i, item in enumerate(CONFIG["ABOUT"]["metrics"]):
         cols[i].metric(label=item["label"], value=item["value"])
 
-# --- PROJECTS TAB ---
 with tab_projects:
     st.header("My Projects")
     st.write("Here are some of the key projects I've worked on, showcasing my skills across different technologies.")
     st.write("---")
 
-    # Loop through projects and display them
     for project in CONFIG["PROJECTS"]:
         with st.container(border=True):
-            col1, col2 = st.columns([1, 2])  # Image column, Text column
+            col1, col2 = st.columns([1, 2])
 
             with col1:
                 st.image(project["image_url"])
@@ -226,38 +202,29 @@ with tab_projects:
                 st.subheader(project["title"])
                 st.write(project["description"])
 
-                # Using st.progress as a "badge" bar for technologies
                 st.markdown(f"**Technologies Used:**")
-                # Format technologies as a comma-separated string
                 tech_str = ", ".join(project['technologies'])
-                st.text(tech_str)  # st.text gives it a clean, monospaced look
-
+                st.text(tech_str)
                 st.link_button("View on GitHub ↗", project["repo_link"])
 
-# --- SKILLS & EXPERIENCE TAB ---
 with tab_skills_exp:
-    # --- Skills Section ---
     st.header("Technical Skills")
     st.write("I am proficient in a wide range of technologies. Here's a breakdown:")
 
     for category, skills in CONFIG["SKILLS"].items():
         st.subheader(category)
         for skill in skills:
-            # Use st.progress to show skill level
             st.progress(skill["level"], text=f"{skill['name']} ({skill['level']}%)")
 
     st.write("---")
 
-    # --- Experience Section ---
     st.header("Work Experience")
 
-    # Loop through experience
     for job in CONFIG["EXPERIENCE"]:
         with st.container(border=True):
             st.subheader(f"**{job['role']}** | {job['company']}")
             st.caption(f"_{job['period']}_")
 
-            # Use st.expander to neatly tuck away details
             with st.expander("Key Responsibilities & Achievements"):
                 for detail in job['details']:
                     st.markdown(f"* {detail}")
